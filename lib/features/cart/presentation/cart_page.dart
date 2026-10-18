@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/batik_theme.dart';
 import '../../../core/utils/format.dart';
+import '../../../core/widgets/batik_product_image.dart';
 import '../../../core/widgets/chatbot_fab.dart';
 import '../../../core/widgets/main_app_bar.dart';
 import '../../../core/widgets/page_width.dart';
-import '../../../core/widgets/product_placeholder.dart';
 import '../../../core/widgets/site_footer.dart';
 import '../domain/cart_item.dart';
 import 'providers/cart_provider.dart';
@@ -279,7 +279,10 @@ class CartPage extends ConsumerWidget {
                 border: Border.all(color: BatikColors.garis),
               ),
               clipBehavior: Clip.antiAlias,
-              child: const ProductPlaceholder(iconSize: 24),
+              child: BatikProductImage(
+                imageUrl: item.product.imageUrl,
+                iconSize: 24,
+              ),
             ),
           ),
 

@@ -103,16 +103,16 @@ class _ChatDialogState extends State<_ChatDialog> {
 
   String _generateBotReply(String q) {
     final lower = q.toLowerCase();
-    if (lower.contains('motif') || lower.contains('cengkeh')) {
-      return 'Motif utama kebanggaan Desa Ngentrong adalah Motif Bunga Cengkeh! Trenggalek kaya akan cengkeh, dan pengrajin Ngentrong menggambarkannya dengan indah berpadu motif parang dan sekar jagad.';
+    if (lower.contains('motif') || lower.contains('cengkeh') || lower.contains('turonggo') || lower.contains('gajah')) {
+      return 'Motif khas Trenggalek meliputi Turonggo Yakso (kesenian jaranan), Cengkehan (kekayaan cengkeh), Gajah Nungguk, Pari Srono, dan Manggis Trenggalek. Dibuat dengan pewarnaan alami dan teknik tulis/cap berkualitas!';
     } else if (lower.contains('toko') || lower.contains('umkm') || lower.contains('daftar')) {
-      return 'Di Desa Ngentrong ada beberapa UMKM binaan: Batik Barokah Ngentrong, Sanggar Sekar Jagad, Batik Melati Karangan, Omah Batik Ngentrong Asri, dan Batik Tulis Sekar Arum. Anda bisa klik bulatan toko di Beranda untuk melihat koleksinya!';
+      return 'Terdapat 5 UMKM Batik binaan Trenggalek: Batik Sekar Jagad Trenggalek, Batik Tulis Sekar Biru, Sanggar Batik Mutiara Menak Sopal, Batik Tulis Widodo Krajan, dan Oemah Batik Ngalum. Anda bisa klik bulatan toko di Beranda untuk melihat koleksi masing-masing!';
     } else if (lower.contains('pesan') || lower.contains('beli') || lower.contains('cara')) {
-      return 'Anda bisa menambahkan batik dari berbagai toko ke dalam Keranjang. Di halaman Keranjang, pesanan akan otomatis dikelompokkan per UMKM asalnya sehingga transparan dan memudahkan pengiriman!';
-    } else if (lower.contains('pria') || lower.contains('kemeja')) {
-      return 'Untuk pria, kami sangat merekomendasikan "Kemeja Batik Cengkeh Lengan Panjang" dari Batik Barokah atau "Kemeja Kasual Batik Kerah Mandar" dari Omah Batik Ngentrong Asri!';
+      return 'Anda bisa menambahkan batik dari berbagai toko ke dalam Keranjang. Di halaman Keranjang, pesanan otomatis dikelompokkan per UMKM asalnya sehingga transparan dan memudahkan transaksi!';
+    } else if (lower.contains('pria') || lower.contains('kemeja') || lower.contains('meter')) {
+      return 'Produk batik kami menyediakan opsi kain per meter, kemeja jadi, hingga pembelian kiloan langsung dari pengrajin!';
     } else {
-      return 'Terima kasih atas pertanyaannya! Semua produk di sini dibuat langsung oleh tangan pengrajin warga Desa Ngentrong, Karangan, Trenggalek dengan bahan primissima dan pewarna berkualitas.';
+      return 'Terima kasih atas pertanyaannya! Semua produk batik ini dibuat langsung oleh pengrajin UMKM Trenggalek dengan bahan katun mori sen, primissima, dan pewarna ramah lingkungan.';
     }
   }
 

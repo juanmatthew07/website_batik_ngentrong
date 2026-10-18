@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/batik_theme.dart';
 import '../../../../core/utils/format.dart';
-import '../../../../core/widgets/product_placeholder.dart';
+import '../../../../core/widgets/batik_product_image.dart';
 import '../../domain/product.dart';
 
 /// Kartu Produk Batik UMKM.
-/// Bersih, tanpa harga diskon/coret merah, dan memakai placeholder gambar abu-abu minimalis.
+/// Menampilkan foto produk asli dengan fallback placeholder minimalis.
 class ProductCard extends StatefulWidget {
   const ProductCard({
     super.key,
@@ -59,10 +59,11 @@ class _ProductCardState extends State<ProductCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Gambar Placeholder Kotak Abu-abu Minimalis
+              // Gambar Produk dari Asset dengan Fallback Placeholder
               AspectRatio(
                 aspectRatio: 1.05,
-                child: ProductPlaceholder(
+                child: BatikProductImage(
+                  imageUrl: p.imageUrl,
                   badgeText: p.technique,
                   accentColor: currentColor.color,
                   iconSize: 42,

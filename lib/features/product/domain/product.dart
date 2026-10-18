@@ -28,6 +28,9 @@ class Product {
     required this.sizes,
     this.isBestseller = false,
     this.imageUrl,
+    this.pricePerMeter,
+    this.priceShirt,
+    this.priceKilogram,
   });
 
   final String id;
@@ -35,7 +38,7 @@ class Product {
   final String storeId;
   final String storeName;
 
-  /// Harga asli dalam rupiah.
+  /// Harga asli dalam rupiah (patokan mulai dari).
   final int price;
 
   final String description;
@@ -46,8 +49,12 @@ class Product {
   final List<String> sizes;
   final bool isBestseller;
 
-  /// Path gambar lokal, contoh: 'assets/images/batik1.jpg'.
-  /// Jika null, akan tampil placeholder abu-abu minimalis.
+  /// Path gambar lokal, contoh: 'assets/batik_images/umkm01_turonggo_yakso.jpg'.
   final String? imageUrl;
+
+  /// Rincian harga dari data CSV UMKM Trenggalek
+  final int? pricePerMeter;
+  final int? priceShirt;
+  final int? priceKilogram;
 }
 

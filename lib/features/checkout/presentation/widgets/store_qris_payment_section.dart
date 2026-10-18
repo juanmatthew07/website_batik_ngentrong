@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../core/theme/batik_theme.dart';
 import '../../../../core/utils/format.dart';
+import '../../../../core/utils/qris_generator.dart';
 
-/// Komponen UI Pembayaran QRIS (Quick Response Code Indonesian Standard).
-/// Didesain khusus untuk transaksi pembayaran langsung ke UMKM Desa Ngentrong.
+/// Komponen UI Pembayaran QRIS Asli (Quick Response Code Indonesian Standard).
+/// Menggunakan standar format EMVCo Bank Indonesia dan generator QR asli (scannable).
 class StoreQrisPaymentSection extends StatefulWidget {
   final int totalAmount;
   final VoidCallback onPaymentSuccess;
@@ -18,7 +20,8 @@ class StoreQrisPaymentSection extends StatefulWidget {
   });
 
   @override
-  State<StoreQrisPaymentSection> createState() => _StoreQrisPaymentSectionState();
+  State<StoreQrisPaymentSection> createState() =>
+      _StoreQrisPaymentSectionState();
 }
 
 class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
@@ -26,12 +29,37 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
   Timer? _timer;
   bool _isVerifying = false;
 
+  late String _invoiceId;
+  late String _qrisPayload;
+
   @override
   void initState() {
     super.initState();
+    _initInvoiceAndPayload();
     // Countdown 15 menit
     _remainingSeconds = 15 * 60;
     _startTimer();
+  }
+
+  void _initInvoiceAndPayload() {
+    _invoiceId =
+        'QRIS-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
+    _qrisPayload = QrisGenerator.generatePayload(
+      amount: widget.totalAmount,
+      merchantName: 'BATIK UMKM NGENTRONG',
+      nmid: 'ID1020349812903',
+      invoiceId: _invoiceId,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant StoreQrisPaymentSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.totalAmount != widget.totalAmount) {
+      setState(() {
+        _initInvoiceAndPayload();
+      });
+    }
   }
 
   void _startTimer() {
@@ -95,7 +123,8 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                 color: Color(0xFFE8F5E9),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.check_circle, color: Colors.green, size: 40),
+              child:
+                  const Icon(Icons.check_circle, color: Colors.green, size: 40),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -110,7 +139,8 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
             const SizedBox(height: 8),
             Text(
               'Dana sebesar ${formatRupiah(widget.totalAmount)} telah terverifikasi. Pesanan Anda segera diproses & dikirim oleh pengrajin Desa Ngentrong.',
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade700, height: 1.4),
+              style: TextStyle(
+                  fontSize: 13, color: Colors.grey.shade700, height: 1.4),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
@@ -124,10 +154,12 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('ID Transaksi:', style: TextStyle(fontSize: 12, color: Colors.black54)),
+                  const Text('ID Transaksi:',
+                      style: TextStyle(fontSize: 12, color: Colors.black54)),
                   Text(
-                    'QRIS-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    _invoiceId,
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -147,6 +179,107 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                 widget.onPaymentSuccess();
               },
               child: const Text('Selesai & Kembali ke Beranda'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPayloadDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.qr_code_2, color: BatikColors.marun),
+            SizedBox(width: 8),
+            Text('Data Standar QRIS EMVCo',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildPayloadRow('Merchant', 'BATIK UMKM NGENTRONG'),
+              _buildPayloadRow('NMID', 'ID1020349812903'),
+              _buildPayloadRow('Kota', 'Trenggalek (Kodepos 66361)'),
+              _buildPayloadRow('Kriteria', 'Usaha Mikro Indonesia (UMI)'),
+              _buildPayloadRow('Mata Uang', 'IDR / Rupiah (360)'),
+              _buildPayloadRow('Nominal', formatRupiah(widget.totalAmount)),
+              _buildPayloadRow('Ref Invoice', _invoiceId),
+              const SizedBox(height: 12),
+              const Text(
+                'String Payload QRIS (Scannable):',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: BatikColors.sogaGelap),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: SelectableText(
+                  _qrisPayload,
+                  style: const TextStyle(
+                      fontFamily: 'monospace', fontSize: 10.5, height: 1.3),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: _qrisPayload));
+              Navigator.of(ctx).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content:
+                      Text('String payload QRIS EMVCo disalin ke clipboard!'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            icon: const Icon(Icons.copy, size: 16),
+            label: const Text('Salin Payload QRIS'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPayloadRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 90,
+            child: Text(label,
+                style: const TextStyle(fontSize: 12, color: Colors.black54)),
+          ),
+          const Text(': ',
+              style: TextStyle(fontSize: 12, color: Colors.black54)),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: BatikColors.sogaGelap),
             ),
           ),
         ],
@@ -196,7 +329,8 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(6),
@@ -204,7 +338,8 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.timer_outlined, color: Colors.white, size: 14),
+                      const Icon(Icons.timer_outlined,
+                          color: Colors.white, size: 14),
                       const SizedBox(width: 4),
                       Text(
                         _formattedTime,
@@ -264,46 +399,65 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      const Text(
                         'NMID: ID1020349812903',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.grey.shade600,
+                          color: Colors.black54,
                           letterSpacing: 0.4,
                         ),
                       ),
                       const SizedBox(height: 12),
 
-                      // QR Code Rendering Realistis
+                      // QR Code Asli (Scannable dengan QrImageView)
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.black12),
                         ),
-                        child: Stack(
-                          alignment: Alignment.center,
+                        child: QrImageView(
+                          data: _qrisPayload,
+                          version: QrVersions.auto,
+                          size: 200,
+                          gapless: true,
+                          errorCorrectionLevel: QrErrorCorrectLevel.M,
+                          eyeStyle: const QrEyeStyle(
+                            eyeShape: QrEyeShape.square,
+                            color: Colors.black,
+                          ),
+                          dataModuleStyle: const QrDataModuleStyle(
+                            dataModuleShape: QrDataModuleShape.square,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Indikator Scannable
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F5E9),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFC8E6C9)),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            const CustomPaint(
-                              size: Size(200, 200),
-                              painter: QrMatrixPainter(),
-                            ),
-                            // Logo QRIS di pusat QR Code
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: Colors.black54, width: 1),
-                              ),
-                              child: const Text(
-                                'QRIS',
+                            Icon(Icons.check_circle,
+                                size: 12, color: Colors.green),
+                            SizedBox(width: 5),
+                            Flexible(
+                              child: Text(
+                                'QR Asli • Scannable',
                                 style: TextStyle(
-                                  fontWeight: FontWeight.w900,
                                   fontSize: 10,
-                                  color: Colors.black,
-                                  letterSpacing: 0.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2E7D32),
                                 ),
                               ),
                             ),
@@ -311,20 +465,37 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                         ),
                       ),
 
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       const Text(
-                        'Dicetak oleh: PT Telkom / Bank Indonesia',
+                        'Dicetak oleh: Bank Indonesia / ASPI QRIS',
                         style: TextStyle(fontSize: 9.5, color: Colors.grey),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
+
+                // Tombol Lihat Detail Data EMVCo QRIS
+                TextButton.icon(
+                  onPressed: _showPayloadDialog,
+                  icon:
+                      const Icon(Icons.code, size: 15, color: BatikColors.soga),
+                  label: const Text(
+                    'Lihat Data Payload EMVCo QRIS',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: BatikColors.soga,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
 
                 // Jumlah Tagihan yang Harus Dibayar
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: BatikColors.kertas,
                     borderRadius: BorderRadius.circular(8),
@@ -338,7 +509,8 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                         children: [
                           const Text(
                             'Total Pembayaran QRIS',
-                            style: TextStyle(fontSize: 12, color: Colors.black54),
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black54),
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -353,21 +525,25 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                       ),
                       OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
                           minimumSize: Size.zero,
                           side: const BorderSide(color: BatikColors.marun),
                         ),
                         onPressed: () {
-                          Clipboard.setData(ClipboardData(text: widget.totalAmount.toString()));
+                          Clipboard.setData(ClipboardData(
+                              text: widget.totalAmount.toString()));
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Nominal ${formatRupiah(widget.totalAmount)} disalin!'),
+                              content: Text(
+                                  'Nominal ${formatRupiah(widget.totalAmount)} disalin!'),
                               duration: const Duration(seconds: 2),
                             ),
                           );
                         },
                         icon: const Icon(Icons.copy, size: 14),
-                        label: const Text('Salin', style: TextStyle(fontSize: 12)),
+                        label:
+                            const Text('Salin', style: TextStyle(fontSize: 12)),
                       ),
                     ],
                   ),
@@ -382,19 +558,24 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.green.shade700,
                       padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
                     onPressed: _isVerifying ? null : _handleConfirmPayment,
                     icon: _isVerifying
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
                           )
                         : const Icon(Icons.check_circle_outline, size: 20),
                     label: Text(
-                      _isVerifying ? 'Memverifikasi Pembayaran...' : 'Saya Sudah Membayar (Simulasi)',
-                      style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold),
+                      _isVerifying
+                          ? 'Memverifikasi Pembayaran...'
+                          : 'Saya Sudah Membayar (Simulasi)',
+                      style: const TextStyle(
+                          fontSize: 14.5, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -402,39 +583,49 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
                 const SizedBox(height: 16),
 
                 // Panduan / Petunjuk Pembayaran
-                Theme(
-                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                  child: ExpansionTile(
-                    tilePadding: EdgeInsets.zero,
-                    title: const Row(
+                Material(
+                  color: Colors.transparent,
+                  child: Theme(
+                    data: Theme.of(context)
+                        .copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      title: const Row(
+                        children: [
+                          Icon(Icons.help_outline,
+                              size: 18, color: BatikColors.soga),
+                          SizedBox(width: 8),
+                          Text(
+                            'Cara Bayar dengan QRIS',
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.bold,
+                              color: BatikColors.sogaGelap,
+                            ),
+                          ),
+                        ],
+                      ),
                       children: [
-                        Icon(Icons.help_outline, size: 18, color: BatikColors.soga),
-                        SizedBox(width: 8),
-                        Text(
-                          'Cara Bayar dengan QRIS',
-                          style: TextStyle(
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.bold,
-                            color: BatikColors.sogaGelap,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildStepItem('1',
+                                  'Buka aplikasi e-Wallet (GoPay, OVO, Dana, ShopeePay) atau m-Banking (BCA, BRI, Mandiri, BNI).'),
+                              _buildStepItem(
+                                  '2', 'Pilih menu "Bayar" atau "Scan QR".'),
+                              _buildStepItem(
+                                  '3', 'Arahkan kamera ke kode QRIS di atas.'),
+                              _buildStepItem('4',
+                                  'Pastikan nama penerima adalah "BATIK UMKM NGENTRONG" dan nominal tepat ${formatRupiah(widget.totalAmount)}.'),
+                              _buildStepItem('5',
+                                  'Masukkan PIN Anda dan tekan tombol "Saya Sudah Membayar" untuk menyelesaikan.'),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildStepItem('1', 'Buka aplikasi e-Wallet (GoPay, OVO, Dana, ShopeePay) atau m-Banking (BCA, BRI, Mandiri, BNI).'),
-                            _buildStepItem('2', 'Pilih menu "Bayar" atau "Scan QR".'),
-                            _buildStepItem('3', 'Arahkan kamera ke kode QRIS di atas.'),
-                            _buildStepItem('4', 'Pastikan nama penerima adalah "BATIK UMKM NGENTRONG" dan nominal tepat ${formatRupiah(widget.totalAmount)}.'),
-                            _buildStepItem('5', 'Masukkan PIN Anda dan tekan tombol "Saya Sudah Membayar" untuk menyelesaikan.'),
-                          ],
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ],
@@ -461,14 +652,18 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
             ),
             child: Text(
               number,
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: BatikColors.soga),
+              style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: BatikColors.soga),
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700, height: 1.35),
+              style: TextStyle(
+                  fontSize: 12.5, color: Colors.grey.shade700, height: 1.35),
             ),
           ),
         ],
@@ -498,7 +693,8 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
         const SizedBox(width: 4),
         const Text(
           'Nasional',
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black87),
+          style: TextStyle(
+              fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black87),
         ),
       ],
     );
@@ -523,68 +719,3 @@ class _StoreQrisPaymentSectionState extends State<StoreQrisPaymentSection> {
     );
   }
 }
-
-/// CustomPainter untuk menggambar QR Matrix yang realistis dengan 3 Corner Finder Patterns
-class QrMatrixPainter extends CustomPainter {
-  const QrMatrixPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.fill;
-
-    final step = size.width / 25; // 25x25 grid
-
-    // 1. Draw Corner Finder Patterns (Top-Left, Top-Right, Bottom-Left)
-    _drawFinderPattern(canvas, 0, 0, step, paint);
-    _drawFinderPattern(canvas, 18 * step, 0, step, paint);
-    _drawFinderPattern(canvas, 0, 18 * step, step, paint);
-
-    // 2. Deterministic pseudo-random pattern for QR modules
-    for (int r = 0; r < 25; r++) {
-      for (int c = 0; c < 25; c++) {
-        // Skip corner finder pattern areas
-        if ((r < 8 && c < 8) || (r < 8 && c >= 17) || (r >= 17 && c < 8)) {
-          continue;
-        }
-
-        // Skip center logo area (r: 10..14, c: 9..15)
-        if (r >= 10 && r <= 14 && c >= 9 && c <= 15) {
-          continue;
-        }
-
-        // Pseudo-random bit pattern based on coordinates
-        final val = ((r * 17 + c * 31 + (r ^ c) * 7) % 10);
-        if (val % 2 == 1 || (r == 6 && c % 2 == 0) || (c == 6 && r % 2 == 0)) {
-          canvas.drawRect(
-            Rect.fromLTWH(c * step + 0.3, r * step + 0.3, step - 0.6, step - 0.6),
-            paint,
-          );
-        }
-      }
-    }
-  }
-
-  void _drawFinderPattern(Canvas canvas, double ox, double oy, double step, Paint paint) {
-    // Outer 7x7 square
-    canvas.drawRect(Rect.fromLTWH(ox, oy, 7 * step, 7 * step), paint);
-
-    // Inner 5x5 white space
-    final whitePaint = Paint()..color = Colors.white;
-    canvas.drawRect(
-      Rect.fromLTWH(ox + step, oy + step, 5 * step, 5 * step),
-      whitePaint,
-    );
-
-    // Center 3x3 black box
-    canvas.drawRect(
-      Rect.fromLTWH(ox + 2 * step, oy + 2 * step, 3 * step, 3 * step),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-

@@ -8,74 +8,74 @@ import '../domain/store.dart';
 class StoreRepository {
   static const List<Store> _stores = [
     Store(
-      id: 'barokah',
-      name: 'Batik Barokah Ngentrong',
+      id: 'umkm_01',
+      name: 'Batik Sekar Jagad Trenggalek',
       owner: 'Ibu Hj. Siti Aminah',
       description:
-          'Pelopor motif batik cengkeh khas Trenggalek di Desa Ngentrong. Menghadirkan batik cap dan tulis dengan pewarna alami soga dan nila yang ramah lingkungan.',
-      address: 'RT 04 RW 02, Dusun Krajan, Desa Ngentrong, Kec. Karangan, Trenggalek',
-      phone: '6281234567801',
+          'Pusat kerajinan batik khas Trenggalek dengan motif unggulan Turonggo Yakso, Cengkehan, dan Gajah Nungguk. Menyediakan bahan per meter, kemeja jadi, hingga pembelian kiloan.',
+      address: 'Jl. Raya Suruh-Trenggalek No. 45, Kec. Suruh, Kabupaten Trenggalek',
+      phone: '6281230000001',
       brandColor: BatikColors.marun,
-      initials: 'BB',
-      craftType: 'Batik Tulis & Cap Motif Cengkeh',
+      initials: 'SJ',
+      craftType: 'Batik Turonggo Yakso & Cengkehan',
       rating: 4.9,
       yearEstablished: 2012,
     ),
     Store(
-      id: 'sekar-jagad',
-      name: 'Sanggar Sekar Jagad',
-      owner: 'Pak Joko Widodo',
+      id: 'umkm_02',
+      name: 'Batik Tulis Sekar Biru',
+      owner: 'Ibu Sulastri',
       description:
-          'Spesialis kain panjang batik tulis halus khas pesisir. Dikerjakan manual dengan canting tembaga oleh ibu-ibu pengrajin Desa Ngentrong.',
-      address: 'RT 07 RW 03, Desa Ngentrong, Kec. Karangan, Trenggalek',
-      phone: '6281234567802',
+          'Spesialis batik tulis halus motif Pari Srono dan Manggis Trenggalek. Dibuat dengan pewarna berkualitas tinggi oleh pengrajin berpengalaman.',
+      address: 'Desa Sumbergedong RT 03/RW 01, Kec. Trenggalek, Kabupaten Trenggalek',
+      phone: '6285790000002',
       brandColor: BatikColors.nila,
-      initials: 'SJ',
-      craftType: 'Batik Tulis Alus & Sutra',
+      initials: 'SB',
+      craftType: 'Batik Tulis Pari Srono & Manggis',
       rating: 4.8,
       yearEstablished: 2015,
     ),
     Store(
-      id: 'melati',
-      name: 'Batik Melati Karangan',
-      owner: 'Ibu Sri Rahayu',
+      id: 'umkm_03',
+      name: 'Sanggar Batik Mutiara Menak Sopal',
+      owner: 'Bapak Menak Sopal',
       description:
-          'Menyediakan busana batik modern siap pakai: kemeja kantor, blus, dan outer santai dengan paduan motif geometris parang dan cengkeh.',
-      address: 'Jl. Balai Desa Ngentrong No. 12, Trenggalek',
-      phone: '6281234567803',
+          'Sanggar batik ternama Trenggalek penghasil motif Turonggo Yakso Halus, Batu Tumpuk, Cengkehan Sederhana, dan Kopi Trenggalek.',
+      address: 'Jl. Soekarno-Hatta No. 12, Kel. Kelutan, Kec. Trenggalek, Kabupaten Trenggalek',
+      phone: '6282130000003',
       brandColor: BatikColors.soga,
-      initials: 'BM',
-      craftType: 'Busana Batik Modern Siap Pakai',
-      rating: 4.7,
-      yearEstablished: 2018,
+      initials: 'MS',
+      craftType: 'Batik Tulis Halus & Menak Sopal',
+      rating: 5.0,
+      yearEstablished: 2010,
     ),
     Store(
-      id: 'omah-asri',
-      name: 'Omah Batik Ngentrong Asri',
+      id: 'umkm_04',
+      name: 'Batik Tulis Widodo Krajan',
+      owner: 'Pak Widodo',
+      description:
+          'Pusat kerajinan batik khas Kampak Trenggalek dengan motif Bunga Cengkeh dan Gajah Nungguk Klasik berkualitas prima.',
+      address: 'RT 12/RW 04, Desa Kampak, Kec. Kampak, Kabupaten Trenggalek',
+      phone: '6281400000004',
+      brandColor: BatikColors.hijau,
+      initials: 'WK',
+      craftType: 'Batik Tulis Bunga Cengkeh & Gajah Nungguk',
+      rating: 4.7,
+      yearEstablished: 2017,
+    ),
+    Store(
+      id: 'umkm_05',
+      name: 'Oemah Batik Ngalum',
       owner: 'Mas Dimas Pratama',
       description:
-          'Inovasi generasi muda Ngentrong yang memadukan motif tradisional Trenggalek dengan gaya kasual kekinian. Cocok untuk anak muda.',
-      address: 'RT 02 RW 01, Dusun Ngentrong Tengah, Karangan, Trenggalek',
-      phone: '6281234567804',
-      brandColor: BatikColors.hijau,
-      initials: 'OA',
-      craftType: 'Batik Kasual & Kontemporer',
-      rating: 4.9,
-      yearEstablished: 2021,
-    ),
-    Store(
-      id: 'sekar-arum',
-      name: 'Batik Tulis Sekar Arum',
-      owner: 'Ibu Endang Sulastri',
-      description:
-          'Pusat batik tulis motif klasik Trenggalek dengan bahan primissima dan sutra dobi. Menjaga pakem motif leluhur secara turun-temurun.',
-      address: 'RT 09 RW 04, Desa Ngentrong, Kec. Karangan, Trenggalek',
-      phone: '6281234567805',
+          'Sentra batik Durenan dengan kreasi motif Turonggo Yakso Kombinasi, Pari Srono Mas, dan Manggis Tiga Rasa yang khas dan modern.',
+      address: 'Jl. Yos Sudarso No. 88, Kec. Durenan, Kabupaten Trenggalek',
+      phone: '6287710000005',
       brandColor: BatikColors.sogaGelap,
-      initials: 'SA',
-      craftType: 'Kain Batik Tulis Primissima',
-      rating: 5.0,
-      yearEstablished: 2008,
+      initials: 'ON',
+      craftType: 'Batik Kombinasi & Manggis Tiga Rasa',
+      rating: 4.9,
+      yearEstablished: 2019,
     ),
   ];
 
@@ -88,7 +88,15 @@ class StoreRepository {
   Future<Store?> getStoreById(String id) async {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     try {
-      return _stores.firstWhere((s) => s.id == id);
+      return _stores.firstWhere(
+        (s) =>
+            s.id == id ||
+            (id == 'barokah' && s.id == 'umkm_01') ||
+            (id == 'sekar-jagad' && s.id == 'umkm_01') ||
+            (id == 'melati' && s.id == 'umkm_02') ||
+            (id == 'omah-asri' && s.id == 'umkm_03') ||
+            (id == 'sekar-arum' && s.id == 'umkm_04'),
+      );
     } catch (_) {
       return null;
     }

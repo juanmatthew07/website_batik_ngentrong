@@ -5,10 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/batik_theme.dart';
 import '../../../core/utils/format.dart';
 import '../../../core/utils/whatsapp.dart';
+import '../../../core/widgets/batik_product_image.dart';
 import '../../../core/widgets/chatbot_fab.dart';
 import '../../../core/widgets/main_app_bar.dart';
 import '../../../core/widgets/page_width.dart';
-import '../../../core/widgets/product_placeholder.dart';
 import '../../../core/widgets/site_footer.dart';
 import '../../cart/presentation/providers/cart_provider.dart';
 import '../data/product_repository_provider.dart';
@@ -121,7 +121,7 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                     builder: (context, constraints) {
                       final isWide = constraints.maxWidth >= 840;
 
-                      // Gambar Placeholder Besar Kotak Abu-abu
+                      // Gambar Produk Asli dengan Fallback Placeholder
                       final visual = Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
@@ -130,7 +130,8 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
                         clipBehavior: Clip.antiAlias,
                         child: AspectRatio(
                           aspectRatio: 1.0,
-                          child: ProductPlaceholder(
+                          child: BatikProductImage(
+                            imageUrl: product.imageUrl,
                             badgeText: product.technique,
                             accentColor: currentColor.color,
                             iconSize: 72,
@@ -236,14 +237,48 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
 
         const SizedBox(height: 12),
 
-        // Harga Asli Saja 
-        Text(
-          formatRupiah(p.price),
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: BatikColors.sogaGelap,
-          ),
+        // Harga Asli Saja (Mulai Dari)
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              formatRupiah(p.price),
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: BatikColors.sogaGelap,
+              ),
+            ),
+            if (p.pricePerMeter != null) ...[
+              const SizedBox(width: 8),
+              Text(
+                '/ meter',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ],
         ),
+
+        // Pilihan Harga dari Data UMKM (Meteran, Kemeja Jadi, Kiloan)
+        if (p.pricePerMeter != null || p.priceShirt != null || p.priceKilogram != null) ...[
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            children: [
+              if (p.pricePerMeter != null)
+                _priceOptionChip('Kain Meteran', p.pricePerMeter!),
+              if (p.priceShirt != null)
+                _priceOptionChip('Kemeja Jadi', p.priceShirt!),
+              if (p.priceKilogram != null)
+                _priceOptionChip('Kiloan', p.priceKilogram!),
+            ],
+          ),
+        ],
 
         const SizedBox(height: 18),
         const Divider(color: BatikColors.garis),
@@ -449,6 +484,25 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
           style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
         ),
       ],
+    );
+  }
+
+  Widget _priceOptionChip(String label, int price) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F5F0),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: BatikColors.garis),
+      ),
+      child: Text(
+        '$label: ${formatRupiah(price)}',
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: BatikColors.sogaGelap,
+        ),
+      ),
     );
   }
 }
