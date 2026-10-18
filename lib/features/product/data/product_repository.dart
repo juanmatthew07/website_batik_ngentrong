@@ -37,6 +37,7 @@ class ProductRepository {
       motif: 'Bunga Cengkeh Trenggalek',
       fabric: 'Katun Primissima Adem',
       isBestseller: true,
+      imageUrl: 'assets/batik_images/batik1.jpg',
       description:
           'Kemeja batik pria dengan motif khas kuncup bunga cengkeh yang menjadi ikon kebanggaan Desa Ngentrong, Trenggalek. Dibuat dengan pewarna ramah lingkungan dan jahitan rapi berfuring halus.',
       colors: [_colorMarun, _colorSoga, _colorNila],
@@ -52,6 +53,7 @@ class ProductRepository {
       motif: 'Cengkeh Kombinasi Sekar Jagad',
       fabric: 'Katun Mori Sen Pilihan',
       isBestseller: false,
+      imageUrl: 'assets/batik_images/batik2.jpg',
       description:
           'Kain lembaran 2.2 meter x 1.15 meter hasil cantingan halus pengrajin senior Desa Ngentrong. Cocok untuk bahan jarik manten, kemeja formal, maupun seragam pesta keluarga.',
       colors: [_colorSoga, _colorNila, _colorKrem],
@@ -67,6 +69,7 @@ class ProductRepository {
       motif: 'Cengkeh Pesisir',
       fabric: 'Katun Rayon Lembut',
       isBestseller: true,
+      imageUrl: 'assets/batik_images/batik3.jpg',
       description:
           'Tunik wanita berpotongan longgar yang anggun dan nyaman dikenakan sepanjang hari. Motif cengkeh tersusun rapi dengan sentuhan garis kontemporer.',
       colors: [_colorNila, _colorMarun, _colorHijau],
@@ -84,6 +87,7 @@ class ProductRepository {
       motif: 'Sekar Jagad Trenggalekan',
       fabric: 'Sutra Dobi Premium',
       isBestseller: true,
+      imageUrl: 'assets/batik_images/batik4.jpg',
       description:
           'Mahakarya batik tulis pesisir dengan motif keanekaragaman nusantara (Sekar Jagad). Proses pembuatan memakan waktu lebih dari 1 bulan dengan detail isen-isen super teliti.',
       colors: [_colorSoga, _colorNila],
@@ -99,6 +103,7 @@ class ProductRepository {
       motif: 'Parang Rusak Seling Cengkeh',
       fabric: 'Sutra Katun Mewah',
       isBestseller: false,
+      imageUrl: 'assets/batik_images/batik5.jpg',
       description:
           'Kemeja eksklusif dengan lining furing katun sutra. Menggabungkan wibawa motif parang dengan kelembutan ornamen bunga cengkeh khas Ngentrong.',
       colors: [_colorHitam, _colorSoga, _colorMarun],
@@ -114,6 +119,7 @@ class ProductRepository {
       motif: 'Sekar Pesisir',
       fabric: 'Sutra Dobi Mengkilap',
       isBestseller: false,
+      imageUrl: 'assets/batik_images/batik6.jpg',
       description:
           'Selendang anggun pelengkap kebaya adat dan busana formal. Pewarnaan alami dengan pinggiran rumbai yang dipilin rapi dengan tangan.',
       colors: [_colorMarun, _colorKrem, _colorNila],
@@ -131,6 +137,7 @@ class ProductRepository {
       motif: 'Kawung Padu Cengkeh',
       fabric: 'Katun Sanforized Awet',
       isBestseller: true,
+      imageUrl: 'assets/batik_images/batik7.jpg',
       description:
           'Kemeja kerja pria dengan fitting modern slim-fit. Warna pekat tidak mudah luntur dan sangat mudah disetrika, pas untuk rutinitas harian di kantor.',
       colors: [_colorNila, _colorSoga, _colorHitam],
@@ -146,6 +153,7 @@ class ProductRepository {
       motif: 'Melati Cengkeh Mekar',
       fabric: 'Katun Primissima Adem',
       isBestseller: false,
+      imageUrl: 'assets/batik_images/batik8.jpg',
       description:
           'Gaun terusan batik siluet A-line yang anggun dan fleksibel untuk berbagai bentuk tubuh. Dilengkapi saku samping tersembunyi dan ritsleting belakang.',
       colors: [_colorMarun, _colorHijau, _colorSoga],
@@ -161,6 +169,7 @@ class ProductRepository {
       motif: 'Geometris Pesisir Ngentrong',
       fabric: 'Katun Rayon Twill',
       isBestseller: false,
+      imageUrl: 'assets/batik_images/batik9.jpg',
       description:
           'Outer santai model kimono yang dapat dipadupadankan dengan celana jeans atau rok polos. Cocok untuk acara kasual maupun semi-formal.',
       colors: [_colorNila, _colorKrem, _colorHitam],
@@ -178,6 +187,7 @@ class ProductRepository {
       motif: 'Cengkeh Abstrak Minimalis',
       fabric: 'Katun Toyobo Campur Mori',
       isBestseller: true,
+      imageUrl: 'assets/batik_images/batik10.jpg',
       description:
           'Kemeja berkerah Shanghai/Mandarin dengan desain motif batik cengkeh yang ditata bergaya urban minimalis. Pilihan favorit kawula muda Trenggalek.',
       colors: [_colorHijau, _colorHitam, _colorSoga],
@@ -193,6 +203,7 @@ class ProductRepository {
       motif: 'Kawung Geometris Modern',
       fabric: 'Katun Kanvas Halus',
       isBestseller: false,
+      imageUrl: 'assets/batik_images/batik11.jpg',
       description:
           'Rompi (vest) reversibel dengan satu sisi batik motif khas Desa Ngentrong dan satu sisi polos warna soga. Dua gaya dalam satu busana.',
       colors: [_colorSoga, _colorNila],
@@ -208,6 +219,7 @@ class ProductRepository {
       motif: 'Kompilasi Motif Ngentrong',
       fabric: 'Kain Blacu Lapis Batik Primissima',
       isBestseller: false,
+      imageUrl: 'assets/batik_images/batik12.jpg',
       description:
           'Set tas jinjing dan dompet pouch serbaguna ramah lingkungan. Dibuat dari perca batik sisa potongan bernilai seni tinggi.',
       colors: [_colorMarun, _colorNila, _colorSoga],
@@ -225,6 +237,7 @@ class ProductRepository {
       motif: 'Sekar Arum Cengkeh Mataram',
       fabric: 'Katun Primissima Halus Lembut',
       isBestseller: false,
+      imageUrl: 'assets/batik_images/batik13.jpg',
       description:
           'Kain jarik tradisional dengan serat benang rapat dan sangat lembut di kulit. Dapat digunakan untuk jarik selendang gendong bayi maupun busana lilit tradisional.',
       colors: [_colorSoga, _colorNila],
@@ -240,6 +253,7 @@ class ProductRepository {
       motif: 'Babon Angrem Seling Cengkeh',
       fabric: 'Katun Berkolissima Asli Solo',
       isBestseller: true,
+      imageUrl: 'assets/batik_images/batik14.jpg',
       description:
           'Kain batik tulis filosofis yang melambangkan kasih sayang ibu dan ketentraman keluarga. Pewarnaan soga klasik yang matang dan beraroma khas malam batik alami.',
       colors: [_colorSoga, _colorMarun],

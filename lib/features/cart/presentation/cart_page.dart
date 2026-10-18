@@ -12,6 +12,9 @@ import '../../../core/widgets/site_footer.dart';
 import '../domain/cart_item.dart';
 import 'providers/cart_provider.dart';
 
+import '../../auth/presentation/providers/auth_provider.dart';
+import '../../auth/presentation/widgets/google_auth_dialog.dart';
+
 /// Halaman Keranjang Belanja (/keranjang).
 /// Sangat Penting: Mengelompokkan item belanja berdasarkan Toko UMKM asalnya.
 class CartPage extends ConsumerWidget {
@@ -151,7 +154,7 @@ class CartPage extends ConsumerWidget {
           ],
         );
 
-        final summaryCard = _buildOrderSummary(context, groups.length, totalCount, totalPrice);
+        final summaryCard = _buildOrderSummary(context, ref, groups.length, totalCount, totalPrice);
 
         if (isWide) {
           return Row(
@@ -377,7 +380,15 @@ class CartPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildOrderSummary(BuildContext context, int storeCount, int totalCount, int totalPrice) {
+  Widget _buildOrderSummary(
+    BuildContext context,
+    WidgetRef ref,
+    int storeCount,
+    int totalCount,
+    int totalPrice,
+  ) {
+    final authState = ref.watch(authNotifierProvider);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -428,7 +439,39 @@ class CartPage extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // Info Status Login Google
+          if (authState.isAuthenticated && authState.currentUser != null)
+            Container(
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F0FE),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFD2E3FC)),
+              ),
+              child: Row(
+                children: [
+                  const GoogleLogo(size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Masuk: ${authState.currentUser!.name}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF174EA6),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const Icon(Icons.check_circle, size: 16, color: Color(0xFF1E8E3E)),
+                ],
+              ),
+            ),
+
+          // Tombol Payment Utama sesuai alur instruksi
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
@@ -436,9 +479,21 @@ class CartPage extends ConsumerWidget {
                 backgroundColor: BatikColors.marun,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              onPressed: () => context.go('/checkout'),
+              onPressed: () => _handlePaymentClick(context, ref),
               icon: const Icon(Icons.payment, size: 18),
-              label: const Text('Lanjut ke Checkout'),
+              label: Text(
+                authState.isAuthenticated ? 'Lanjut ke Pembayaran QRIS' : 'Pembayaran (Login Google)',
+                style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: Text(
+              authState.isAuthenticated
+                  ? 'Akun Google siap untuk verifikasi QRIS'
+                  : 'Sebelum payment, Anda akan diminta login Google',
+              style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
             ),
           ),
           const SizedBox(height: 12),
@@ -453,4 +508,21 @@ class CartPage extends ConsumerWidget {
       ),
     );
   }
+
+  Future<void> _handlePaymentClick(BuildContext context, WidgetRef ref) async {
+    final authState = ref.read(authNotifierProvider);
+
+    // Alur: Jika belum login Google, tampilkan UI Google Auth terlebih dahulu
+    if (!authState.isAuthenticated) {
+      final success = await showGoogleAuthDialog(context);
+      if (success == true && context.mounted) {
+        // Setelah login Google auth sukses, lanjut ke UI Payment QRIS
+        context.go('/checkout');
+      }
+    } else {
+      // Jika sudah login Google, langsung buka UI Payment QRIS
+      context.go('/checkout');
+    }
+  }
 }
+

@@ -27,6 +27,7 @@ class Product {
     required this.colors,
     required this.sizes,
     this.isBestseller = false,
+    this.imageUrl,
   });
 
   final String id;
@@ -44,5 +45,9 @@ class Product {
   final List<BatikColorOption> colors;
   final List<String> sizes;
   final bool isBestseller;
+
+  /// Path gambar lokal, contoh: 'assets/images/batik1.jpg'.
+  /// Jika null, akan tampil placeholder abu-abu minimalis.
+  final String? imageUrl;
 }
 

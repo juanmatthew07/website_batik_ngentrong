@@ -9,11 +9,14 @@ import '../../../core/widgets/main_app_bar.dart';
 import '../../../core/widgets/page_width.dart';
 import '../../../core/widgets/product_placeholder.dart';
 import '../../../core/widgets/site_footer.dart';
+import '../../auth/presentation/providers/auth_provider.dart';
+import '../../auth/presentation/widgets/google_auth_dialog.dart';
 import '../../cart/domain/cart_item.dart';
 import '../../cart/presentation/providers/cart_provider.dart';
+import 'widgets/store_qris_payment_section.dart';
 
-/// Halaman Mockup Checkout (/checkout).
-/// Menyajikan rincian pesanan per toko dan tombol "Lanjut Pembayaran / Login Google".
+/// Halaman Checkout & Pembayaran QRIS (/checkout).
+/// Menyajikan rincian pesanan per toko, data akun Google pemesan, dan modul pembayaran QRIS.
 class CheckoutPage extends ConsumerWidget {
   const CheckoutPage({super.key});
 
@@ -22,9 +25,10 @@ class CheckoutPage extends ConsumerWidget {
     final groups = ref.watch(cartGroupedByStoreProvider);
     final totalCount = ref.watch(cartTotalCountProvider);
     final totalPrice = ref.watch(cartTotalPriceProvider);
+    final authState = ref.watch(authNotifierProvider);
 
     // Estimasi ongkos kirim standar per toko UMKM Ngentrong
-    final shippingPerStore = 15000;
+    const shippingPerStore = 15000;
     final totalShipping = groups.length * shippingPerStore;
     final grandTotal = totalPrice + totalShipping;
 
@@ -53,7 +57,7 @@ class CheckoutPage extends ConsumerWidget {
                     const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
                     const SizedBox(width: 8),
                     const Text(
-                      'Checkout Pesanan',
+                      'Pembayaran QRIS',
                       style: TextStyle(color: BatikColors.marun, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -69,17 +73,22 @@ class CheckoutPage extends ConsumerWidget {
                   ? _buildEmpty(context)
                   : LayoutBuilder(
                       builder: (context, constraints) {
-                        final isWide = constraints.maxWidth >= 860;
+                        final isWide = constraints.maxWidth >= 900;
 
                         final details = Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // 1. Mockup Alamat Pengiriman
-                            _buildAddressCard(),
+                            // 1. Akun Google Pemesan
+                            _buildGoogleUserCard(context, ref, authState),
+
+                            const SizedBox(height: 20),
+
+                            // 2. Alamat Pengiriman
+                            _buildAddressCard(authState),
 
                             const SizedBox(height: 24),
 
-                            // 2. Rincian Barang per Toko UMKM
+                            // 3. Rincian Barang per Toko UMKM
                             const Text(
                               'Rincian Pesanan per UMKM',
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: BatikColors.sogaGelap),
@@ -93,22 +102,37 @@ class CheckoutPage extends ConsumerWidget {
                           ],
                         );
 
-                        final paymentSummary = _buildPaymentSummaryCard(
-                          context,
-                          ref,
-                          totalPrice,
-                          totalShipping,
-                          grandTotal,
-                          groups.length,
+                        final paymentSide = Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Ringkasan Tagihan
+                            _buildBillSummaryCard(
+                              totalPrice: totalPrice,
+                              totalShipping: totalShipping,
+                              grandTotal: grandTotal,
+                              storeCount: groups.length,
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // Komponen UI Pembayaran QRIS
+                            StoreQrisPaymentSection(
+                              totalAmount: grandTotal,
+                              onPaymentSuccess: () {
+                                ref.read(cartNotifierProvider.notifier).clearCart();
+                                context.go('/');
+                              },
+                            ),
+                          ],
                         );
 
                         if (isWide) {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(flex: 7, child: details),
+                              Expanded(flex: 6, child: details),
                               const SizedBox(width: 32),
-                              Expanded(flex: 5, child: paymentSummary),
+                              Expanded(flex: 5, child: paymentSide),
                             ],
                           );
                         }
@@ -116,8 +140,8 @@ class CheckoutPage extends ConsumerWidget {
                         return Column(
                           children: [
                             details,
-                            const SizedBox(height: 24),
-                            paymentSummary,
+                            const SizedBox(height: 28),
+                            paymentSide,
                           ],
                         );
                       },
@@ -138,11 +162,22 @@ class CheckoutPage extends ConsumerWidget {
         padding: const EdgeInsets.all(48),
         child: Column(
           children: [
-            const Text('Tidak ada item yang dapat di-checkout.'),
+            const Icon(Icons.check_circle_outline, size: 64, color: Colors.green),
             const SizedBox(height: 16),
-            FilledButton(
+            const Text(
+              'Tidak ada item yang sedang diproses.',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Keranjang belanja Anda kosong atau pembayaran telah diselesaikan.',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+            const SizedBox(height: 20),
+            FilledButton.icon(
               onPressed: () => context.go('/'),
-              child: const Text('Mulai Belanja Batik'),
+              icon: const Icon(Icons.storefront, size: 18),
+              label: const Text('Mulai Belanja Batik'),
             ),
           ],
         ),
@@ -150,7 +185,98 @@ class CheckoutPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildAddressCard() {
+  Widget _buildGoogleUserCard(BuildContext context, WidgetRef ref, AuthState authState) {
+    final user = authState.currentUser;
+    final isLoggedIn = authState.isAuthenticated && user != null;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: BatikColors.garis),
+      ),
+      child: Row(
+        children: [
+          if (isLoggedIn)
+            CircleAvatar(
+              radius: 22,
+              backgroundColor: BatikColors.marun,
+              child: Text(
+                user.name.isNotEmpty ? user.name[0] : 'U',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+            )
+          else
+            const GoogleLogo(size: 32),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      isLoggedIn ? user.name : 'Belum Login Google',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14.5),
+                    ),
+                    const SizedBox(width: 6),
+                    if (isLoggedIn)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F0FE),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GoogleLogo(size: 12),
+                            SizedBox(width: 4),
+                            Text(
+                              'Google Auth',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF174EA6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  isLoggedIn ? user.email : 'Login Google diperlukan untuk verifikasi identitas pesanan.',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12.5),
+                ),
+              ],
+            ),
+          ),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              minimumSize: Size.zero,
+            ),
+            onPressed: () => showGoogleAuthDialog(context),
+            child: Text(
+              isLoggedIn ? 'Ganti Akun' : 'Login Google',
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddressCard(AuthState authState) {
+    final user = authState.currentUser;
+    final name = user?.name ?? 'Budi Santoso';
+    final phone = user?.phoneNumber ?? '0812-3456-7890';
+    final address = user?.defaultAddress ??
+        'Jl. Pemuda No. 45, RT 03 RW 01, Kelurahan Ngantru, Kec. Trenggalek, Kab. Trenggalek, Jawa Timur 66311';
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -166,7 +292,7 @@ class CheckoutPage extends ConsumerWidget {
               const Icon(Icons.location_on, color: BatikColors.marun, size: 20),
               const SizedBox(width: 8),
               const Text(
-                'Alamat Pengiriman (Mockup)',
+                'Alamat Pengiriman',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               const Spacer(),
@@ -184,13 +310,13 @@ class CheckoutPage extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Budi Santoso • 0812-3456-7890',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          Text(
+            '$name • $phone',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
           ),
           const SizedBox(height: 4),
           Text(
-            'Jl. Pemuda No. 45, RT 03 RW 01, Kelurahan Ngantru, Kec. Trenggalek, Kab. Trenggalek, Jawa Timur 66311',
+            address,
             style: TextStyle(color: Colors.grey.shade700, fontSize: 13, height: 1.4),
           ),
         ],
@@ -282,11 +408,11 @@ class CheckoutPage extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                const Row(
                   children: [
-                    const Icon(Icons.local_shipping_outlined, size: 18, color: BatikColors.soga),
-                    const SizedBox(width: 8),
-                    const Text(
+                    Icon(Icons.local_shipping_outlined, size: 18, color: BatikColors.soga),
+                    SizedBox(width: 8),
+                    Text(
                       'Ekspedisi Reguler (J&T / Pos Indonesia):',
                       style: TextStyle(fontSize: 12.5),
                     ),
@@ -304,183 +430,72 @@ class CheckoutPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildPaymentSummaryCard(
-    BuildContext context,
-    WidgetRef ref,
-    int totalPrice,
-    int totalShipping,
-    int grandTotal,
-    int storeCount,
-  ) {
+  Widget _buildBillSummaryCard({
+    required int totalPrice,
+    required int totalShipping,
+    required int grandTotal,
+    required int storeCount,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: BatikColors.garis),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Ringkasan Tagihan',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: BatikColors.sogaGelap),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: BatikColors.sogaGelap),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Subtotal Produk Batik:', style: TextStyle(color: Colors.black54)),
-              Text(formatRupiah(totalPrice), style: const TextStyle(fontWeight: FontWeight.w600)),
+              const Text('Subtotal Produk Batik:', style: TextStyle(color: Colors.black54, fontSize: 13)),
+              Text(formatRupiah(totalPrice), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Total Ongkir ($storeCount Toko UMKM):', style: const TextStyle(color: Colors.black54)),
-              Text(formatRupiah(totalShipping), style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text('Ongkos Kirim ($storeCount Toko):', style: const TextStyle(color: Colors.black54, fontSize: 13)),
+              Text(formatRupiah(totalShipping), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Biaya Layanan UMKM Desa:', style: TextStyle(color: Colors.black54)),
-              Text('GRATIS (Didukung Pemkab)', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+              Text('Biaya Layanan UMKM:', style: TextStyle(color: Colors.black54, fontSize: 13)),
+              Text('GRATIS (Pemkab Trenggalek)', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12)),
             ],
           ),
-          const SizedBox(height: 16),
-          const Divider(color: BatikColors.garis),
           const SizedBox(height: 12),
+          const Divider(color: BatikColors.garis),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Total Pembayaran:',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                'Total Tagihan:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               Text(
                 formatRupiah(grandTotal),
                 style: const TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: 20,
+                  fontSize: 19,
                   color: BatikColors.marun,
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 24),
-
-          // Tombol Wajib Sesuai Instruksi: "Lanjut Pembayaran / Login Google"
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: BatikColors.marun,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onPressed: () => _showPrototypeAuthDialog(context, ref),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Ikon Google Sederhana
-                  Container(
-                    width: 22,
-                    height: 22,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'G',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'Lanjut Pembayaran / Login Google',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.5),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          const Center(
-            child: Text(
-              'UI Prototipe Marketplace • Transaksi aman & terpercaya',
-              style: TextStyle(fontSize: 11.5, color: Colors.grey),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showPrototypeAuthDialog(BuildContext context, WidgetRef ref) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.lock_outline, color: BatikColors.marun),
-            SizedBox(width: 10),
-            Text('Simulasi Checkout & Auth'),
-          ],
-        ),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Ini adalah prototipe antarmuka (UI Mockup).',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Pada implementasi sistem penuh, tombol ini akan menghubungkan Google Sign-In untuk otentikasi pembeli, kemudian membuka Payment Gateway (QRIS/Transfer Bank) yang langsung menyalurkan dana ke masing-masing rekening UMKM Desa Ngentrong.',
-              style: TextStyle(fontSize: 13, height: 1.5),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Batal'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: BatikColors.marun),
-            onPressed: () {
-              Navigator.of(context).pop();
-              ref.read(cartNotifierProvider.notifier).clearCart();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Simulasi Berhasil: Pesanan telah dibuat untuk pengrajin Ngentrong!'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-              context.go('/');
-            },
-            child: const Text('Simulasi Pesanan Selesai'),
           ),
         ],
       ),
     );
   }
 }
-

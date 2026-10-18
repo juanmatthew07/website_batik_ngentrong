@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/auth/presentation/widgets/google_auth_dialog.dart';
 import '../../features/cart/presentation/providers/cart_provider.dart';
 import '../theme/batik_theme.dart';
 import 'page_width.dart';
@@ -120,11 +122,119 @@ class MainAppBar extends ConsumerWidget implements PreferredSizeWidget {
                       child: const Icon(Icons.shopping_bag_outlined, color: BatikColors.sogaGelap, size: 24),
                     ),
                   ),
+
+                  const SizedBox(width: 4),
+
+                  // Profil / Login Google
+                  _buildGoogleAuthButton(context, ref, isWide),
                 ],
               );
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildGoogleAuthButton(BuildContext context, WidgetRef ref, bool isWide) {
+    final authState = ref.watch(authNotifierProvider);
+
+    if (authState.isAuthenticated && authState.currentUser != null) {
+      final user = authState.currentUser!;
+      return PopupMenuButton<String>(
+        tooltip: 'Akun Google',
+        offset: const Offset(0, 48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: BatikColors.kertas,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: BatikColors.garis),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                radius: 12,
+                backgroundColor: BatikColors.marun,
+                child: Text(
+                  user.name.isNotEmpty ? user.name[0] : 'U',
+                  style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              ),
+              if (isWide) ...[
+                const SizedBox(width: 6),
+                Text(
+                  user.name.split(' ').first,
+                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: BatikColors.sogaGelap),
+                ),
+              ],
+            ],
+          ),
+        ),
+        onSelected: (val) {
+          if (val == 'logout') {
+            ref.read(authNotifierProvider.notifier).signOut();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Anda telah keluar dari akun Google.')),
+            );
+          } else if (val == 'switch') {
+            showGoogleAuthDialog(context);
+          }
+        },
+        itemBuilder: (context) => [
+          PopupMenuItem<String>(
+            enabled: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: BatikColors.sogaGelap),
+                ),
+                Text(
+                  user.email,
+                  style: const TextStyle(fontSize: 11.5, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+          const PopupMenuDivider(),
+          const PopupMenuItem<String>(
+            value: 'switch',
+            child: Row(
+              children: [
+                Icon(Icons.switch_account_outlined, size: 18),
+                SizedBox(width: 8),
+                Text('Ganti Akun Google', style: TextStyle(fontSize: 13)),
+              ],
+            ),
+          ),
+          const PopupMenuItem<String>(
+            value: 'logout',
+            child: Row(
+              children: [
+                Icon(Icons.logout, size: 18, color: Colors.red),
+                SizedBox(width: 8),
+                Text('Keluar Akun', style: TextStyle(fontSize: 13, color: Colors.red)),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return TextButton.icon(
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        minimumSize: Size.zero,
+      ),
+      onPressed: () => showGoogleAuthDialog(context),
+      icon: const GoogleLogo(size: 18),
+      label: Text(
+        isWide ? 'Masuk Google' : 'Masuk',
+        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: BatikColors.sogaGelap),
       ),
     );
   }
