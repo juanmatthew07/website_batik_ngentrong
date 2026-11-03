@@ -1,0 +1,15 @@
+id_umkm,nama_umkm,alamat,kontak_wa,nama_motif,harga_per_meter,harga_kemeja_jadi,harga_kiloan,file_gambar
+umkm_01,Batik Sekar Jagad Trenggalek,"Jl. Raya Suruh-Trenggalek No. 45, Kec. Suruh, Kabupaten Trenggalek",6.28123E+12,Turonggo Yakso,85000,220000,280000,umkm01_turonggo_yakso.jpg
+umkm_01,Batik Sekar Jagad Trenggalek,"Jl. Raya Suruh-Trenggalek No. 45, Kec. Suruh, Kabupaten Trenggalek",6.28123E+12,Cengkehan,75000,195000,,umkm01_cengkehan.jpg
+umkm_01,Batik Sekar Jagad Trenggalek,"Jl. Raya Suruh-Trenggalek No. 45, Kec. Suruh, Kabupaten Trenggalek",6.28123E+12,Gajah Nungguk,110000,280000,350000,umkm01_gajah_nungguk.jpg
+umkm_02,Batik Tulis Sekar Biru,"Desa Sumbergedong RT 03/RW 01, Kec. Trenggalek, Kabupaten Trenggalek",6.28579E+12,Pari Srono,120000,310000,,umkm02_pari_srono.jpg
+umkm_02,Batik Tulis Sekar Biru,"Desa Sumbergedong RT 03/RW 01, Kec. Trenggalek, Kabupaten Trenggalek",6.28579E+12,Manggis Trenggalek,95000,240000,320000,umkm02_manggis_trenggalek.jpg
+umkm_03,Sanggar Batik Mutiara Menak Sopal,"Jl. Soekarno-Hatta No. 12, Kel. Kelutan, Kec. Trenggalek, Kabupaten Trenggalek",6.28213E+12,Turonggo Yakso Halus,150000,380000,,umkm03_turonggo_yakso_halus.jpg
+umkm_03,Sanggar Batik Mutiara Menak Sopal,"Jl. Soekarno-Hatta No. 12, Kel. Kelutan, Kec. Trenggalek, Kabupaten Trenggalek",6.28213E+12,Batu Tumpuk,80000,,260000,umkm03_batu_tumpuk.jpg
+umkm_03,Sanggar Batik Mutiara Menak Sopal,"Jl. Soekarno-Hatta No. 12, Kel. Kelutan, Kec. Trenggalek, Kabupaten Trenggalek",6.28213E+12,Cengkehan Sederhana,65000,175000,220000,umkm03_cengkehan_sederhana.jpg
+umkm_03,Sanggar Batik Mutiara Menak Sopal,"Jl. Soekarno-Hatta No. 12, Kel. Kelutan, Kec. Trenggalek, Kabupaten Trenggalek",6.28213E+12,Kopi Trenggalek,90000,230000,,umkm03_kopi_trenggalek.jpg
+umkm_04,Batik Tulis Widodo Krajan,"RT 12/RW 04, Desa Kampak, Kec. Kampak, Kabupaten Trenggalek",6.2814E+12,Bunga Cengkeh,70000,180000,240000,umkm04_bunga_cengkeh.jpg
+umkm_04,Batik Tulis Widodo Krajan,"RT 12/RW 04, Desa Kampak, Kec. Kampak, Kabupaten Trenggalek",6.2814E+12,Gajah Nungguk Klasik,130000,330000,,umkm04_gajah_nungguk_klasik.jpg
+umkm_05,Oemah Batik Ngalum,"Jl. Yos Sudarso No. 88, Kec. Durenan, Kabupaten Trenggalek",6.28771E+12,Turonggo Yakso Kombinasi,100000,260000,,umkm05_turonggo_yakso_kombinasi.jpg
+umkm_05,Oemah Batik Ngalum,"Jl. Yos Sudarso No. 88, Kec. Durenan, Kabupaten Trenggalek",6.28771E+12,Pari Srono Mas,140000,350000,450000,umkm05_pari_srono_mas.jpg
+umkm_05,Oemah Batik Ngalum,"Jl. Yos Sudarso No. 88, Kec. Durenan, Kabupaten Trenggalek",6.28771E+12,Manggis Tiga Rasa,85000,210000,,umkm05_manggis_tiga_rasa.jpg

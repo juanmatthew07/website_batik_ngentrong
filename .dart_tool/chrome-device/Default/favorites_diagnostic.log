@@ -1,0 +1,25 @@
+2026-10-18 03:24:03.015: [INFO] CurrentProfilePath: C:\Users\juanm\AppData\Local\Temp\flutter_tools.2dce44c2\flutter_tools_chrome_device.9ae835e7\Default
+2026-10-18 03:24:03.015: [INFO] Profiles total count: 1
+2026-10-18 03:24:03.015: [INFO] Profile: name=Profile 1 path=C:\Users\juanm\AppData\Local\Temp\flutter_tools.2dce44c2\flutter_tools_chrome_device.9ae835e7\Default lastActive=null
+2026-10-18 03:24:03.015: [INFO] LastUsedProfileDir: C:\Users\juanm\AppData\Local\Temp\flutter_tools.2dce44c2\flutter_tools_chrome_device.9ae835e7\Default
+2026-10-18 03:24:03.015: [INFO] VisibilityChanged: 0
+2026-10-18 03:24:03.062: [INFO] OnDoneLoading sync enabled: 0
+2026-10-18 03:24:03.062: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-18 03:24:03.062: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-18 03:24:03.062: [INFO] BookmarksSnapshot Startup total=0 bar=0 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-10-18 03:24:03.118: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-18 03:24:05.712: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-18 03:24:05.714: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-18 03:24:05.714: [INFO] BookmarkNodeAdded, ABU: 0
+2026-10-18 03:26:36.830: [INFO] BookmarksSnapshot Shutdown total=2 bar=1 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-10-18 10:16:18.987: [INFO] CurrentProfilePath: C:\Users\juanm\AppData\Local\Temp\flutter_tools.280aef33\flutter_tools_chrome_device.27ba590a\Default
+2026-10-18 10:16:18.987: [INFO] Profiles total count: 1
+2026-10-18 10:16:18.987: [INFO] Profile: name=Profile 1 path=C:\Users\juanm\AppData\Local\Temp\flutter_tools.280aef33\flutter_tools_chrome_device.27ba590a\Default lastActive=null
+2026-10-18 10:16:18.987: [INFO] LastUsedProfileDir: C:\Users\juanm\AppData\Local\Temp\flutter_tools.280aef33\flutter_tools_chrome_device.27ba590a\Default
+2026-10-18 10:16:18.987: [INFO] VisibilityChanged: 0
+2026-10-18 10:16:19.047: [INFO] RecordSyncInitDuration has_sync_been_enabled: 0 state: 0
+2026-10-18 10:16:19.048: [INFO] OnDoneLoading sync enabled: 0
+2026-10-18 10:16:19.048: [INFO] BookmarkModelLoaded, ids_reassigned: 0
+2026-10-18 10:16:19.048: [INFO] BookmarksLoadDropped droppedNodes=0
+2026-10-18 10:16:19.048: [INFO] BookmarksSnapshot Startup total=2 bar=1 other=0 mobile=0 showBar=0 showBarNTP=1
+2026-10-18 10:53:26.162: [INFO] BookmarksSnapshot Shutdown total=2 bar=1 other=0 mobile=0 showBar=0 showBarNTP=1
