@@ -1,0 +1,25 @@
+name: batik_ngentrong
+description: Katalog web UMKM Batik Desa Ngentrong, Trenggalek.
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.6.2
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.2.1
+  url_launcher: ^6.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
